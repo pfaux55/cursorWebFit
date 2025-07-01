@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  age       Int
+  goals     String[] // Array of fitness goals
+  intensity String   // beginner, intermediate, advanced
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fitnessPlans FitnessPlan[]
+
+  @@map("users")
+}
+
+model FitnessPlan {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String
+  exercises   Json     // Structured exercise data
+  duration    String   // e.g., "4 weeks", "8 weeks"
+  frequency   String   // e.g., "3x per week"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("fitness_plans")
+}
